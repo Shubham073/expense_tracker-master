@@ -37,9 +37,12 @@ class ExpenseTile extends StatelessWidget {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: getColor(expense.category),
-          child: Icon(getIcon(expense.category), color: Colors.white),
+        leading: Hero(
+          tag: 'expense-avatar-${expense.id}',
+          child: CircleAvatar(
+            backgroundColor: getColor(expense.category),
+            child: Icon(getIcon(expense.category), color: Colors.white),
+          ),
         ),
         title: Text(expense.title),
         subtitle: Text(

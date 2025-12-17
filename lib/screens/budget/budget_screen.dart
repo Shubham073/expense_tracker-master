@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../widgets/category_pie_chart.dart';
 import '../../widgets/weekly_bar_chart.dart';
+import '../../widgets/custom_expense_curve_chart.dart';
+import 'package:provider/provider.dart';
+import '../../providers/expense_provider.dart';
 
 class BudgetScreen extends StatelessWidget {
   const BudgetScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final expenses = Provider.of<ExpenseProvider>(context).expenses;
+    // Use last 10 expenses for the curve chart
+    final curveData = expenses.length >= 2
+        ? expenses.reversed.take(10).map((e) => e.amount).toList().reversed.toList()
+        : [0.0, 0.0];
     return Scaffold(
       appBar: AppBar(
         title: const Text("Insights"),
@@ -27,6 +35,16 @@ class BudgetScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 220, child: WeeklyBarChart()),
+          const SizedBox(height: 25),
+
+          const Text(
+            "Recent Expenses Curve",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 180,
+            child: CustomExpenseCurveChart(data: curveData),
+          ),
         ],
       ),
     );

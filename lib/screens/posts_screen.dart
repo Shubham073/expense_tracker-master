@@ -48,7 +48,6 @@ class _PostsScreenState extends State<PostsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Posts')),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
           if (!_isLoading && _hasMore && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
@@ -56,23 +55,54 @@ class _PostsScreenState extends State<PostsScreen> {
           }
           return false;
         },
-        child: ListView.builder(
-          itemCount: _posts.length + (_hasMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index < _posts.length) {
-              final post = _posts[index];
-              return ListTile(
-                title: Text(post['title']),
-                subtitle: Text(post['body']),
-                leading: CircleAvatar(child: Text(post['id'].toString())),
-              );
-            } else {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-          },
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 120.0,
+              floating: true,
+              pinned: true,
+              backgroundColor: Colors.deepPurple,
+              flexibleSpace: FlexibleSpaceBar(
+                title: const Text('Posts'),
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.deepPurple, Colors.purpleAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  if (index < _posts.length) {
+                    final post = _posts[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      elevation: 2,
+                      child: ListTile(
+                        title: Text(post['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(post['body']),
+                        leading: CircleAvatar(child: Text(post['id'].toString())),
+                      ),
+                    );
+                  } else {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                },
+                childCount: _posts.length + (_hasMore ? 1 : 0),
+              ),
+            ),
+          ],
         ),
       ),
     );
