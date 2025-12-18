@@ -1,4 +1,5 @@
 import 'package:expense_tracker/providers/expense_provider.dart';
+import 'package:expense_tracker/providers/category_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,14 +11,17 @@ class AddExpenseScreen extends StatefulWidget {
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final titleCtrl = TextEditingController();
   final amountCtrl = TextEditingController();
+  final notesCtrl = TextEditingController();
   String category = "Food";
-  DateTime? reminderDateTime;
+  String? userCategory;
+  DateTime spentDate = DateTime.now();
   final _formKey = GlobalKey<FormState>();
   String? _amountError;
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ExpenseProvider>(context);
+  final provider = Provider.of<ExpenseProvider>(context);
+  final categoryProvider = Provider.of<CategoryProvider>(context);
 
     return Scaffold(
       appBar: AppBar(title: Text("Add Expense")),
@@ -52,55 +56,84 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   return null;
                 },
               ),
-              DropdownButton(
-                value: category,
-                items: ["Food", "Travel", "Shopping", "Bills"].map((e) {
-                  return DropdownMenuItem(
-                    value: e,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 8.0,
-                      ),
-                      child: Text(e),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) => setState(() => category = value!),
-              ),
-              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
-                    child: Text(reminderDateTime == null
-                        ? 'No reminder set'
-                        : 'Reminder: 	${reminderDateTime!.toLocal()}'),
+                    child: DropdownButton(
+                      value: category,
+                      items: (["Food", "Travel", "Shopping", "Bills"]
+                              .followedBy(categoryProvider.categories.map((c) => c.name))
+                              .toSet())
+                          .map((e) {
+                        return DropdownMenuItem(
+                          value: e,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                            child: Text(e),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) => setState(() {
+                        category = value!;
+                        // Set userCategory only if it's a custom category (not one of the default 4)
+                        final defaults = ["Food", "Travel", "Shopping", "Bills"];
+                        userCategory = defaults.contains(value) ? null : value;
+                      }),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    tooltip: 'Add Category',
+                    onPressed: () async {
+                      final controller = TextEditingController();
+                      final result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Add Category'),
+                          content: TextField(
+                            controller: controller,
+                            decoration: const InputDecoration(labelText: 'Category Name'),
+                          ),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                            TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Add')),
+                          ],
+                        ),
+                      );
+                      if (result != null && result.trim().isNotEmpty) {
+                        await categoryProvider.addCategory(result.trim());
+                        setState(() {
+                          userCategory = result.trim();
+                          category = userCategory!;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: notesCtrl,
+                decoration: const InputDecoration(labelText: "Notes (optional)"),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text('Spent Date: ${spentDate.toLocal().toString().substring(0, 16)}'),
                   ),
                   TextButton(
-                    child: const Text('Set Reminder'),
+                    child: const Text('Pick Date'),
                     onPressed: () async {
-                      final pickedDate = await showDatePicker(
+                      final picked = await showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
+                        initialDate: spentDate,
+                        firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (pickedDate != null) {
-                        final pickedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (pickedTime != null) {
-                          setState(() {
-                            reminderDateTime = DateTime(
-                              pickedDate.year,
-                              pickedDate.month,
-                              pickedDate.day,
-                              pickedTime.hour,
-                              pickedTime.minute,
-                            );
-                          });
-                        }
+                      if (picked != null) {
+                        setState(() { spentDate = picked; });
                       }
                     },
                   ),
@@ -117,7 +150,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         titleCtrl.text,
                         double.parse(amountCtrl.text),
                         category,
-                        reminderDateTime,
+                        null,
+                        spentDate,
+                        notesCtrl.text.isNotEmpty ? notesCtrl.text : null,
+                        userCategory,
                       );
                       Navigator.pop(context);
                     } catch (e) {

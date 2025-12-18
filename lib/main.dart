@@ -1,3 +1,4 @@
+import 'package:expense_tracker/providers/category_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'providers/expense_provider.dart';
 import 'providers/theme_provider.dart';
 import 'models/expense.dart';
+import 'models/category.dart';
 import 'screens/main_navigation.dart';
 
 void main() async {
@@ -14,7 +16,9 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(ExpenseAdapter());
+  Hive.registerAdapter(CategoryAdapter());
   await Hive.openBox<Expense>('expensesBox');
+  await Hive.openBox<Category>('categoriesBox');
 
   // Initialize notifications
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -30,8 +34,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ExpenseProvider()..loadExpenses()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+  ChangeNotifierProvider(create: (_) => ExpenseProvider()..loadExpenses()),
+  ChangeNotifierProvider(create: (_) => ThemeProvider()),
+  ChangeNotifierProvider(create: (_) => CategoryProvider()..loadCategories()),
       ],
       child: const MyApp(),
     ),

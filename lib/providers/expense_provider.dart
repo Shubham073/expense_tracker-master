@@ -18,7 +18,15 @@ class ExpenseProvider with ChangeNotifier {
   }
 
   // Add
-  Future<void> addExpense(String title, double amount, String category, [DateTime? reminderDateTime]) async {
+  Future<void> addExpense(
+    String title,
+    double amount,
+    String category,
+    [DateTime? reminderDateTime,
+    DateTime? spentDate,
+    String? notes,
+    String? userCategory]
+  ) async {
     Expense exp = Expense(
       id: uuid.v4(),
       title: title,
@@ -26,6 +34,9 @@ class ExpenseProvider with ChangeNotifier {
       category: category,
       date: DateTime.now(),
       reminderDateTime: reminderDateTime,
+      spentDate: spentDate ?? DateTime.now(),
+      notes: notes,
+      userCategory: userCategory,
     );
 
     await _db.addExpense(exp);

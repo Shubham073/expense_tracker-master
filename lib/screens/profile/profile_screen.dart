@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:expense_tracker/providers/expense_provider.dart';
 import 'package:expense_tracker/providers/theme_provider.dart';
+import 'package:expense_tracker/screens/profile/manage_categories_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,12 @@ class ProfileScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
+      appBar: AppBar(
+        title: const Text("Profile"),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -26,17 +32,17 @@ class ProfileScreen extends StatelessWidget {
                 child: const Icon(Icons.person, size: 45),
               ),
               const SizedBox(width: 16),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Shubham Bhalekar",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     "shubham.bhalekar@xoriant.com",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -73,6 +79,21 @@ class ProfileScreen extends StatelessWidget {
 
           const SizedBox(height: 12),
 
+          // MANAGE CATEGORIES
+          ListTile(
+            leading: const Icon(Icons.category),
+            title: const Text("Manage Categories"),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ManageCategoriesScreen(),
+                ),
+              );
+            },
+          ),
+
           // EXPORT JSON
           ListTile(
             leading: const Icon(Icons.file_download),
@@ -100,10 +121,10 @@ class ProfileScreen extends StatelessWidget {
 
           // CLEAR ALL EXPENSES
           ListTile(
-            leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text(
+            leading: Icon(Icons.delete_forever, color: Theme.of(context).colorScheme.error),
+            title: Text(
               "Clear All Expenses",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             onTap: () async {
               final confirm = await showDialog(
@@ -143,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
           Center(
             child: Text(
               "Expense Tracker v1.0.0",
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ],

@@ -2,6 +2,7 @@ import 'package:expense_tracker/screens/budget/budget_screen.dart';
 import 'package:expense_tracker/screens/expenses/expenses_screen.dart';
 import 'package:expense_tracker/screens/profile/profile_screen.dart';
 import 'package:expense_tracker/screens/posts_screen.dart';
+import 'package:expense_tracker/screens/reports/reports_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -15,6 +16,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _screens = [
     ExpensesScreen(),
     BudgetScreen(),
+    const ReportsScreen(),
     ProfileScreen(),
     // const PostsScreen(),
   ];
@@ -28,9 +30,8 @@ class _MainNavigationState extends State<MainNavigation> {
         onTap: (value) {
           setState(() => _index = value);
         },
-        selectedItemColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.blue,
-        unselectedItemColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[700],
-        backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
@@ -39,6 +40,10 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(
             icon: Icon(Icons.pie_chart),
             label: "Budget",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.analytics),
+            label: "Analysis",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

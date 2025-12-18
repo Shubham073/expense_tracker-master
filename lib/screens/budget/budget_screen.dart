@@ -18,28 +18,31 @@ class BudgetScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Insights"),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
+        ),
         elevation: 2,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
+          Text(
             "Category Breakdown",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 200, child: CategoryPieChart()),
           const SizedBox(height: 25),
 
-          const Text(
+          Text(
             "Weekly Expenses",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 220, child: WeeklyBarChart()),
           const SizedBox(height: 25),
 
-          const Text(
+          Text(
             "Recent Expenses Curve",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
           ),
           SizedBox(
             height: 180,

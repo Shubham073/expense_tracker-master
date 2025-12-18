@@ -22,6 +22,15 @@ class Expense {
   @HiveField(5)
   DateTime? reminderDateTime;
 
+  @HiveField(6)
+  DateTime spentDate;
+
+  @HiveField(7)
+  String? notes;
+
+  @HiveField(8)
+  String? userCategory;
+
   Expense({
     required this.id,
     required this.title,
@@ -29,6 +38,9 @@ class Expense {
     required this.date,
     required this.category,
     this.reminderDateTime,
+    required this.spentDate,
+    this.notes,
+    this.userCategory,
   });
 
   Map<String, dynamic> toMap() {
@@ -39,6 +51,9 @@ class Expense {
       'date': date.toIso8601String(),
       'category': category,
       'reminderDateTime': reminderDateTime?.toIso8601String(),
+      'spentDate': spentDate.toIso8601String(),
+      'notes': notes,
+      'userCategory': userCategory,
     };
   }
 }
